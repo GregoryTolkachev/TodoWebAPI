@@ -31,7 +31,26 @@ namespace TodoWebAPI
 
             services.AddControllers();
                 
-            services.AddDbContext<TodoDbContext>(opt => opt.UseInMemoryDatabase("todo"));
+            //services.AddDbContext<TodoDbContext>(opt => opt.UseInMemoryDatabase("todo"));
+
+            //database connection        
+            services.AddDbContext<TodoDbContext>(opt => opt.UseSqlite(
+               Configuration.GetConnectionString("todo")
+            ));
+
+            services.AddCors (opt => {
+                opt.AddPolicy ("Allow", b => 
+                b.AllowAnyOrigin ().AllowAnyMethod ().AllowAnyHeader ());
+            });
+
+
+            // services.AddCors (opt => {
+            // opt.AddPolicy ("AllowAll",
+            // builder => builder.AllowAnyOrigin ().AllowAnyMethod ().AllowAnyHeader ());
+            // });
+
+
+
 
             // services.AddDbContext<TodoDbContext>(opt => opt.UseSqlite(
             //    Configuration.GetConnectionString("todo")
@@ -53,9 +72,16 @@ namespace TodoWebAPI
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TodoWebAPI v1"));
             }
 
+
+            app.UseCors("Allow");
+
+            app.UseStaticFiles();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            
 
             app.UseAuthorization();
 

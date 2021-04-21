@@ -26,13 +26,11 @@ namespace TodoWebAPI.Controllers
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
             //return await _context.TodoItems.ToListAsync();
-            //return await _context.TodoItems.OrderBy(i => i.Due).Include(td => td.Responsible).ToListAsync();
+            return await _context.TodoItems.OrderBy(i => i.Due).Include(td => td.Responsible).ToListAsync();
             //return await _context.TodoItems.Include(tdi => tdi.Responsible).ToListAsync();
-
             //return await _context.TodoItems.Include(td => td.Responsible).ToListAsync();
             
-            
-            return await _context.TodoItems.Include(tdi => tdi.Responsible).ToListAsync();
+            //return await _context.TodoItems.Include(tdi => tdi.Responsible).ToListAsync();
 
             // var people= _context.People.ToListAsync();
             // return await _context.TodoItems.Join(
@@ -44,10 +42,6 @@ namespace TodoWebAPI.Controllers
             //         TodoItem =TodoItem,
             //         Person = p
             //     };
-            
-            
-            
-            
            
         }
 
@@ -64,6 +58,29 @@ namespace TodoWebAPI.Controllers
 
             return todoItem;
         }
+
+
+        //Patch
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchTodoItem(uint id, TodoItem todoItem) {
+            if(id != todoItem.TodoItemId) {
+                return BadRequest();
+            }
+
+            var item = await _context.TodoItems.FindAsync(id);
+
+            if(item == null) {
+                return NotFound();
+            }
+
+            item.IsComplete = todoItem.IsComplete;
+            _context.Update(item);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+
+
 
         // PUT: api/TodoItem/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
